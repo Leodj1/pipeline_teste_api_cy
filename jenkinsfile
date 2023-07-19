@@ -1,0 +1,33 @@
+pipeline {
+    agent any 
+
+    tools { 
+        nodejs 'Node 20.4.0' 
+    }
+    
+    stages {
+        stage('Clonar Repositorio') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Leodj1/testes-api-cy.git'
+            }
+        }
+        
+        stage('Construir') {
+            steps {
+                bat 'npm install'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'npm run cy:run ' 
+            }
+        }
+        
+        stage('Publicar') {
+            steps {
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'mochawesome-report', reportFiles: 'report.html', reportName: 'Testes EBAC Cypress', reportTitles: '', useWrapperFileDirectly: true])
+            }
+        }
+    }
+}
